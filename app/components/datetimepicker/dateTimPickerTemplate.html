@@ -1,0 +1,31 @@
+<div class="u-dtp">
+    <div class="u-dtp-header">
+        时间: <input type="text"/> <input type="text"/>
+    </div>
+    <div class="u-dtp-content">
+        <div class="month" ng-repeat="month in source.result track by $index">
+            <div class="title">
+                <span>{{month.date| date: 'yyyy-MM'}}</span>
+            </div>
+            <div class="dtp-week">
+                <span>&nbsp;日</span>
+                <span>&nbsp;一</span>
+                <span>&nbsp;二</span>
+                <span>&nbsp;三</span>
+                <span>&nbsp;四</span>
+                <span>&nbsp;五</span>
+                <span>&nbsp;六</span>
+            </div>
+            <div class="dtp-day">
+            <span ng-repeat="day in month.days " ng-style="{'visibility': day.getMonth() === month.date.getMonth() ? 'visible' : 'hidden', 'font-size': day.getMonth() === month.date.getMonth() ? 1000 : 400}">
+                <br ng-if="$index % 7 === 0"/>
+                {{ day | date: 'dd' }}
+            </span>
+            </div>
+        </div>
+    </div>
+    <div class="u-dtp-btns">
+        <button>确定</button>
+        <button>取消</button>
+    </div>
+</div>
