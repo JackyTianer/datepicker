@@ -10,17 +10,17 @@ angular.module('ui.tx', [])
             templateUrl: 'components/datetimepicker/dateTimPickerTemplate.html',
             scope: {},
             link: function (scope, ele, attrs, modelCtrl) {
-                document.querySelector('.u-dtp-content').addEventListener('scroll', function (e) {
+                scope.id = new Date().getTime();
+                ele[0].querySelector('.u-dtp-content').addEventListener('scroll', function (e) {
                     if (this.scrollTop === 0) {
                         $timeout(function () {
-                            scope.setPreviousMonth();
+                            scope.setPreviousMonth(3, scope.offsetMonth, scope.source.result);
                             this.scrollTop = scope.eleHeight * 3;
                         }.bind(this), 100)
                     }
                     if (this.clientHeight + this.scrollTop >= this.scrollHeight) {
                         $timeout(function () {
-                            scope.setNextMonth();
-                            scope.$apply();
+                            scope.setNextMonth(3, scope.offsetMonth, scope.source.result);
                             this.scrollTop = this.scrollHeight - scope.eleHeight * 3;
                         }.bind(this), 100)
                     }
@@ -32,8 +32,16 @@ angular.module('ui.tx', [])
 
             },
             controller: ['$scope', 'dtpService', function ($scope, dtpService) {
+                $scope.offsetMonth = {
+                    start: 2,
+                    end: 2
+                }
                 // 列表数据源
-                $scope.source = dtpService.getInitSource();
+                $scope.source = {
+                    today: new Date(),
+                    crtDate: new Date(),
+                    result: dtpService.getInitResult($scope.offsetMonth)
+                };
                 $scope.eleHeight = dtpService.HEIGHT;
                 $scope.offsetMonth = dtpService.offsetMonth;
                 $scope.setPreviousMonth = dtpService.setPreviousMonth.bind(dtpService);
@@ -65,13 +73,11 @@ angular.module('ui.tx', [])
                     days: []
                 }
                 var mfirst = new Date();
-                mfirst.setMonth(i);
-                mfirst.setDate(1);
+                mfirst.setFullYear(mfirst.getFullYear(), i, 1);
                 dateObj.date = mfirst;
                 var mfirstTime = +mfirst;
                 var nfirst = new Date();
-                nfirst.setMonth(i + 1);
-                nfirst.setDate(1);
+                nfirst.setFullYear(nfirst.getFullYear(), i + 1, 1);
                 var nfirstTime = +nfirst;
                 var lastTime = nfirstTime + ((7 - nfirst.getDay()) % 7 - 1) * MS_OF_DAY;
                 var num = -mfirst.getDay();
@@ -86,25 +92,29 @@ angular.module('ui.tx', [])
             return result;
         }
 
-        this.getInitSource = function () {
-            this.source.result = getResultInSource(this.source.crtDate, this.offsetMonth.start, this.offsetMonth.end);
-            return this.source;
+        this.getInitResult = function (obj) {
+            //this.source.result = getResultInSource(this.source.crtDate, this.offsetMonth.start, this.offsetMonth.end);
+            return getResultInSource(this.source.crtDate, obj.start, obj.end);;
         };
 
-        this.setPreviousMonth = function (offset) {
+        this.setPreviousMonth = function (offset, obj, objResult) {
             var offset = offset || 3;
-            var result = getResultInSource(this.source.crtDate, this.offsetMonth.start + offset, -this.offsetMonth.start - 1);
+            var result = getResultInSource(this.source.crtDate, obj.start + offset, -obj.start - 1);
             for (var i = result.length - 1; i >= 0; i--) {
-                this.source.result.unshift(result[i]);
+                //this.source.result.unshift(result[i]);
+                objResult.unshift(result[i]);
             }
-            this.offsetMonth.start += offset;
+            obj.start += offset;
+            //this.offsetMonth.start += offset;
         };
-        this.setNextMonth = function (offset) {
+        this.setNextMonth = function (offset, obj ,objResult) {
             var offset = offset || 3;
-            var result = getResultInSource(this.source.crtDate, -this.offsetMonth.end - 1, this.offsetMonth.end + offset);
+            var result = getResultInSource(this.source.crtDate, -obj.end - 1, obj.end + offset);
             for (var i in  result) {
-                this.source.result.push(result[i]);
+                //this.source.result.push(result[i]);
+                objResult.push(result[i]);
             }
-            this.offsetMonth.end += offset;
+            obj.end += offset;
+            //this.offsetMonth.end += offset;
         }
     }])
