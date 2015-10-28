@@ -2,32 +2,50 @@
  * Created by jackytianer on 15/10/26.
  */
 angular.module('ui.tx', [])
-    .directive('dtp', [function () {
+    .directive('dtp', ['$timeout', function ($timeout) {
         return {
             stricts: 'EA',
             require: '^ngModel',
+            replace: 'true',
             templateUrl: 'components/datetimepicker/dateTimPickerTemplate.html',
             scope: {},
             link: function (scope, ele, attrs, modelCtrl) {
+                document.querySelector('.u-dtp-content').addEventListener('scroll', function (e) {
+                    if (this.scrollTop === 0) {
+                        $timeout(function () {
+                            scope.setPreviousMonth();
+                            this.scrollTop = scope.eleHeight * 3;
+                        }.bind(this), 100)
+                    }
+                    if (this.clientHeight + this.scrollTop >= this.scrollHeight) {
+                        $timeout(function () {
+                            scope.setNextMonth();
+                            scope.$apply();
+                            this.scrollTop = this.scrollHeight - scope.eleHeight * 3;
+                        }.bind(this), 100)
+                    }
+                });
+                //ele.scroll(function (e) {
+                //    console.log(e);
+                //})
+
+
             },
             controller: ['$scope', 'dtpService', function ($scope, dtpService) {
                 // 列表数据源
-                //$scope.source = {
-                //    crtDate: new Date(),
-                //    result: []
-                //};
                 $scope.source = dtpService.getInitSource();
-                dtpService.setPreviousMonth();
-                dtpService.setPreviousMonth();
-                dtpService.setPreviousMonth();
-                dtpService.setNextMonth();
-                dtpService.setNextMonth();
-                dtpService.setNextMonth();
+                $scope.eleHeight = dtpService.HEIGHT;
+                $scope.offsetMonth = dtpService.offsetMonth;
+                $scope.setPreviousMonth = dtpService.setPreviousMonth.bind(dtpService);
+                $scope.setNextMonth = dtpService.setNextMonth.bind(dtpService);
             }]
         }
     }])
     .service('dtpService', [function () {
         var MS_OF_DAY = 24 * 3600 * 1000;
+        this.HEIGHT = 176;
+
+        this.crtPosition = 2;
         this.source = {
             today: new Date(),
             crtDate: new Date(),
@@ -76,8 +94,7 @@ angular.module('ui.tx', [])
         this.setPreviousMonth = function (offset) {
             var offset = offset || 3;
             var result = getResultInSource(this.source.crtDate, this.offsetMonth.start + offset, -this.offsetMonth.start - 1);
-            console.log(result)
-            for (var i = result.length; i >= 0; i--) {
+            for (var i = result.length - 1; i >= 0; i--) {
                 this.source.result.unshift(result[i]);
             }
             this.offsetMonth.start += offset;
