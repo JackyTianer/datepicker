@@ -6,11 +6,12 @@ angular.module('ui.tx', [])
         return {
             stricts: 'EA',
             require: '^ngModel',
-            replace: 'true',
+            replace: 'false',
             templateUrl: 'components/datetimepicker/dateTimPickerTemplate.html',
             scope: {},
             link: function (scope, ele, attrs, modelCtrl) {
                 var uDtpElement = ele[0].querySelector('.u-dtp-content');
+                if(!uDtpElement) return;
                 uDtpElement.addEventListener('scroll', function (e) {
                     if (this.scrollTop === 0) {
                         $timeout(function () {

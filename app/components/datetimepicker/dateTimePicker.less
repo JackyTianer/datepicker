@@ -1,11 +1,17 @@
 .u-dtp {
+
+  margin: 20px auto;
+  padding: 10px 0;
   width: 250px;
+  border-radius: 3px;
+  background: #fff;
   .u-dtp-header {
     width: 180px;
     margin: 5px auto;
     label {
+      font-size: 12px;
       .ipt-date {
-        width: 100px;
+        width: 85px;
         border-radius: 2px;
         outline: 0;
         border: none;
@@ -63,7 +69,7 @@
   .u-dtp-btns {
     text-align: center;
     margin: 5px;
-    button{
+    button {
       font-size: 12px;
       width: 80px;
       outline: 0;
@@ -76,11 +82,21 @@
           background: #5ba1de;
         }
       }
-      &.cancel{
+      &.cancel {
         box-shadow: inset 0 0 0 1px #d6d6d6;
         color: #737272;
         background: #fafafa;
       }
     }
   }
+}
+
+.u-cover {
+  background: rgba(0,0,0,0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
 }
