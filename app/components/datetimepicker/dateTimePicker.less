@@ -2,7 +2,7 @@
   width: 250px;
   .u-dtp-header {
     width: 180px;
-    margin: 0 auto;
+    margin: 5px auto;
     label {
       .ipt-date {
         width: 100px;
@@ -57,6 +57,29 @@
             color: white;
           }
         }
+      }
+    }
+  }
+  .u-dtp-btns {
+    text-align: center;
+    margin: 5px;
+    button{
+      font-size: 12px;
+      width: 80px;
+      outline: 0;
+      border: none;
+      border-radius: 3px;
+      &.ok {
+        background: #328ad6;
+        color: white;
+        &:hover {
+          background: #5ba1de;
+        }
+      }
+      &.cancel{
+        box-shadow: inset 0 0 0 1px #d6d6d6;
+        color: #737272;
+        background: #fafafa;
       }
     }
   }
