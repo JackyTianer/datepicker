@@ -10,8 +10,8 @@ angular.module('ui.tx', [])
             templateUrl: 'components/datetimepicker/dateTimPickerTemplate.html',
             scope: {},
             link: function (scope, ele, attrs, modelCtrl) {
-                scope.id = new Date().getTime();
-                ele[0].querySelector('.u-dtp-content').addEventListener('scroll', function (e) {
+                var uDtpElement = ele[0].querySelector('.u-dtp-content');
+                uDtpElement.addEventListener('scroll', function (e) {
                     if (this.scrollTop === 0) {
                         $timeout(function () {
                             scope.setPreviousMonth(3, scope.offsetMonth, scope.source.result);
@@ -25,23 +25,42 @@ angular.module('ui.tx', [])
                         }.bind(this), 100)
                     }
                 });
-                //ele.scroll(function (e) {
-                //    console.log(e);
-                //})
+                scope.$watch('source.crtDate', function (newV, oldV) {
+                    scope.crtTimestamp = new Date(newV).setHours(0, 0, 0, 0 );
+                    if (newV) {
+                        var date = new Date(newV);
+                        date.setDate(1);
+                        date.setHours(0, 0, 0, 0);
+                        for (var i = 0; i < scope.source.result.length; i++) {
+                            if (date.getTime() === scope.source.result[i].date.getTime()) {
+                                uDtpElement.scrollTop = i * scope.eleHeight;
+                            }
+                        }
+                    }
+
+                });
 
 
             },
-            controller: ['$scope', 'dtpService', function ($scope, dtpService) {
+            controller: ['$scope', '$filter', 'dtpService', function ($scope, $filter, dtpService) {
                 $scope.offsetMonth = {
                     start: 2,
                     end: 2
                 }
                 // 列表数据源
                 $scope.source = {
-                    today: new Date(),
-                    crtDate: new Date(),
+                    today: new Date(new Date().setHours(0, 0, 0, 0)),
+                    crtDate: $filter('date')(new Date(), 'yyyy-MM-dd'),
+                    crtTime: new Date(),
                     result: dtpService.getInitResult($scope.offsetMonth)
                 };
+
+                $scope.setDate = function (day) {
+                    $scope.source.crtDate = $filter('date')(day, 'yyyy-MM-dd');
+                    $scope.crtTimestamp = day.getTime();
+                }
+
+
                 $scope.eleHeight = dtpService.HEIGHT;
                 $scope.offsetMonth = dtpService.offsetMonth;
                 $scope.setPreviousMonth = dtpService.setPreviousMonth.bind(dtpService);
@@ -55,9 +74,7 @@ angular.module('ui.tx', [])
 
         this.crtPosition = 2;
         this.source = {
-            today: new Date(),
-            crtDate: new Date(),
-            result: []
+            crtDate: new Date()
         }
 
         this.offsetMonth = {
@@ -74,6 +91,7 @@ angular.module('ui.tx', [])
                 }
                 var mfirst = new Date();
                 mfirst.setFullYear(mfirst.getFullYear(), i, 1);
+                mfirst.setHours(0, 0, 0, 0);
                 dateObj.date = mfirst;
                 var mfirstTime = +mfirst;
                 var nfirst = new Date();
@@ -94,7 +112,7 @@ angular.module('ui.tx', [])
 
         this.getInitResult = function (obj) {
             //this.source.result = getResultInSource(this.source.crtDate, this.offsetMonth.start, this.offsetMonth.end);
-            return getResultInSource(this.source.crtDate, obj.start, obj.end);;
+            return getResultInSource(this.source.crtDate, obj.start, obj.end);
         };
 
         this.setPreviousMonth = function (offset, obj, objResult) {
@@ -107,7 +125,7 @@ angular.module('ui.tx', [])
             obj.start += offset;
             //this.offsetMonth.start += offset;
         };
-        this.setNextMonth = function (offset, obj ,objResult) {
+        this.setNextMonth = function (offset, obj, objResult) {
             var offset = offset || 3;
             var result = getResultInSource(this.source.crtDate, -obj.end - 1, obj.end + offset);
             for (var i in  result) {

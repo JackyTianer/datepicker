@@ -1,0 +1,63 @@
+.u-dtp {
+  width: 250px;
+  .u-dtp-header {
+    width: 180px;
+    margin: 0 auto;
+    label {
+      .ipt-date {
+        width: 100px;
+        border-radius: 2px;
+        outline: 0;
+        border: none;
+        box-shadow: inset 0 0 0 1px #d6d6d6;
+        padding: 5px 10px;
+
+      }
+    }
+  }
+  .u-dtp-content {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+    overflow: scroll;
+    .month {
+      height: 176px;
+      .title {
+        cursor: default;
+        font-size: 13px;
+        text-align: center;
+      }
+      .dtp-week {
+        color: #a3a3a3;
+        .week {
+          display: inline-block;
+          cursor: default;
+          font-size: 12px;
+          width: 21px;
+          text-align: center;
+          span {
+            font-size: 12px;
+          }
+        }
+      }
+      .dtp-day {
+        width: 180px;
+        .day {
+          font-size: 12px;
+          cursor: pointer;
+          text-align: center;
+          display: inline-block;
+          width: 25px;
+          &.today {
+            color: #328ad6;
+          }
+          &.z-crt {
+            background-image: linear-gradient(to bottom, #38a9fb, #2c91f9);
+            border-radius: 3px;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
